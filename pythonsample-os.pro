@@ -10,18 +10,21 @@
 #   - translation filenames have to be changed
 
 # The name of your application
-TARGET = pythonsample
+TARGET = pythonsample-os
 
-CONFIG += sailfishapp_qml
+CONFIG += sailfishapp sailfishapp_qml
 
-SOURCES +=
+SOURCES += qml/cover/coveractions.py \
+    qml/pages/helloworld.py \
+    qml/pages/uname.py \
+    qml/pages/oscommand.py
 
-OTHER_FILES += qml/pythonsample.qml \
+OTHER_FILES += qml/pythonsample-os.qml \
     qml/cover/CoverPage.qml \
     qml/pages/FirstPage.qml \
-    rpm/pythonsample.changes.in \
-    rpm/pythonsample.spec \
-    rpm/pythonsample.yaml \
-    pythonsample.desktop \
-    qml/cover/coveractions.py \
-    qml/pages/datadownloader.py
+    qml/pages/ExecuteOSCommand.qml \
+    rpm/pythonsample-os.changes.in \
+    rpm/pythonsample-os.spec \
+    rpm/pythonsample-os.yaml \
+    pythonsample-os.desktop \
+    images/852304_linux_512x512.pngg
