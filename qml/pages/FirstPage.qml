@@ -33,64 +33,134 @@ import Sailfish.Silica 1.0
 import io.thp.pyotherside 1.4
 
 Page {
-
     id: page
+
+    allowedOrientations: Orientation.All
+
     property bool downloading: false
 
     PageHeader {
         id: header
         width: parent.width
-        title: "Colorology app"
+        title: "uname and hello world"
     }
 
-    Label {
-        id: mainLabel
+    // Label {       // is static
+    // TextField {   // multiple lines; can be edited
+    TextArea {       // single line; can be edited
+        id: mainText
         anchors.verticalCenter: parent.verticalCenter
-        text: "Color is unknown."
-        visible: !page.downloading
+        text: ""
         anchors.horizontalCenter: parent.horizontalCenter
-    }
-
-    ProgressBar {
-        id: dlprogress
-        label: "Downloading latest color trends."
-        anchors.verticalCenter: parent.verticalCenter
-        width: parent.width
-        visible: page.downloading
+        width: page.width
+        wrapMode: Text.WordWrap // wrap text word wise
     }
 
     Button {
-        text: "Update color"
-        enabled: !page.downloading
+        id: button_say_hello_world
+        text: "Say Hello World"
         anchors.bottom: parent.bottom
         width: parent.width
         onClicked: {
-            python.startDownload();
+            helloworld.startHelloWorld()
+        }
+    }
+
+    Button {
+        id: button_uname
+        text: "uname"
+        anchors.bottom: button_say_hello_world.top
+        width: parent.width
+        onClicked: {
+            uname.uname()
+        }
+    }
+
+    Button {
+        id: button_uname_a
+        text: "uname -a"
+        anchors.bottom: button_uname.top
+        width: parent.width
+        onClicked: {
+            uname.unameA()
+        }
+    }
+
+    Button {
+        id: button_uname_r
+        text: "uname -r"
+        anchors.bottom: button_uname_a.top
+        width: parent.width
+        onClicked: {
+            uname.unameR()
+        }
+    }
+
+    Button {
+        id: execute_os_command
+        text: "execute OS command"
+        anchors.bottom: button_uname_r.top
+        width: parent.width
+        onClicked: {
+            pageStack.push(Qt.resolvedUrl("ExecuteOSCommand.qml"))
         }
     }
 
     Python {
-        id: python
+        id: helloworld
 
         Component.onCompleted: {
             addImportPath(Qt.resolvedUrl('.'));
 
-            setHandler('progress', function(ratio) {
-                dlprogress.value = ratio;
-            });
-            setHandler('finished', function(newvalue) {
-                page.downloading = false;
-                mainLabel.text = 'Color is ' + newvalue + '.';
+            setHandler('output', function(display) {
+                mainText.text = display;
             });
 
-            importModule('datadownloader', function () {});
+            importModule('helloworld', function () {});
 
         }
 
-        function startDownload() {
-            page.downloading = true;
-            dlprogress.value = 0.0;
-            call('datadownloader.downloader.download', function() {});
+        function startHelloWorld() {
+            call('helloworld.helloworld', function() {});
+        }
+
+        onError: {
+            // when an exception is raised, this error handler will be called
+            console.log('python error: ' + traceback);
+        }
+
+        onReceived: {
+            // asychronous messages from Python arrive here
+            // in Python, this can be accomplished via pyotherside.send()
+            console.log('got message from python: ' + data);
+        }
+    }
+
+    Python {
+        id: uname
+
+        Component.onCompleted: {
+            addImportPath(Qt.resolvedUrl('.'));
+
+            setHandler('output', function(display) {
+                mainText.text = display;
+            });
+
+            importModule('uname', function () {});
+
+        }
+
+        function uname() {
+            call('uname.uname', function() {});
+        }
+
+        function unameA() {
+            call('uname.uname.a', function() {});
+        }
+
+
+        function unameR() {
+            call('uname.uname.r', function() {});
         }
 
         onError: {
@@ -105,5 +175,3 @@ Page {
         }
     }
 }
-
-
